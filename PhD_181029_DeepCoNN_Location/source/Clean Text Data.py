@@ -1,17 +1,25 @@
-# coding: utf-8
 import json
 import pandas as pd
+import math
 from keras.preprocessing.text import text_to_word_sequence
 
 def clean(text):
-    return text_to_word_sequence(text,
+    print(text)
+    if type(text)!=str:
+        print("BINGO")
+        return " "
+    else:
+        return text_to_word_sequence(text,
                                  filters='!"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n',
                                  lower=True, split=" ")
     
-data = pd.read_csv("../data/hotelRevs.csv")
+data = pd.read_csv("../data/Libro1.csv", encoding="ISO-8859-1")
 
-cleaned_text = data.loc[:, ["reviewerID", "asin", "overall", "reviewerCity", "reviewerProvince"]]
-cleaned_text.loc[:, "reviewText"] = data.loc[:, "reviewText"].apply(clean)
+#    asin    reviewer    country    overall    title    review
+#cleaned_text = data.loc[:, ["reviewer", "asin", "overall", "country"]]
+cleaned_text = data.loc[:, "reviewer"].apply(clean)
+cleaned_text = data.loc[:, ["asin", "overall", "country"]]
+cleaned_text.loc[:, "reviewText"] = (data.loc[:, "title"] + " " + data.loc[:, "review"]).apply(clean)
 
-cleaned_text.to_csv("../data/cleaned_reviews.csv")
+cleaned_text.to_csv("../data/cleaned_reviews02.csv")
 

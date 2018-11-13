@@ -33,7 +33,7 @@ raw_data = pd.read_csv("../data/unembedded_grouped_cleaned_data.csv")
 test_size = 0.005
 
 # get test_size percentage of users
-unique_users = raw_data.loc[:, "reviewerID"].unique()
+unique_users = raw_data.loc[:, "reviewer"].unique()
 users_size = len(unique_users)
 test_idx = np.random.choice(users_size,
                               size=int(users_size * test_size),
@@ -45,8 +45,8 @@ test_users = unique_users[test_idx]
 # everyone else is a training user
 train_users = np.delete(unique_users, test_idx)
 
-test = raw_data[raw_data["reviewerID"].isin(test_users)]
-train = raw_data[raw_data["reviewerID"].isin(train_users)]
+test = raw_data[raw_data["reviewer"].isin(test_users)]
+train = raw_data[raw_data["reviewer"].isin(train_users)]
 
 unique_test_movies = test["asin"].unique()
 
@@ -58,8 +58,8 @@ train = train.where(np.logical_not(train["asin"].isin(unique_test_movies))).drop
 # In[ ]:
 
 #
-user_seq_sizes = raw_data.loc[:, "userReviews"].apply(lambda x: x.split()).apply(len)
-item_seq_sizes = raw_data.loc[:, "movieReviews"].apply(lambda x: x.split()).apply(len)
+user_seq_sizes = raw_data.loc[:, "userReviews"].apply(lambda x: str(x).split()).apply(len)
+item_seq_sizes = raw_data.loc[:, "movieReviews"].apply(lambda x: str(x).split()).apply(len)
 
 
 # In[ ]:
@@ -165,7 +165,7 @@ hidden_size = 64
 deepconn = DeepCoNN(emb_size, hidden_size, u_seq_len, i_seq_len)
 
 batch_size = 32
-deepconn.train(train_embedded, batch_size, epochs=20)
+deepconn.train(train_embedded, batch_size, epochs=1)
 
 deepconn.model.save("cnn.h5")
 
